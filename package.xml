@@ -4,7 +4,7 @@
   <name>robot2t/name>
   <version>0.0.0</version>
   <description>TODO: Package description</description>
-  <maintainer email="thuabui1632@gmail.com">robot2t</maintainer>
+  <maintainer email="thuabui1632@gmail.com">ThuaJungle</maintainer>
   <license>TODO: License declaration</license>
 t
   <buildtool_depend>ament_cmake</buildtool_depend>
