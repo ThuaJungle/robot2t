@@ -4,9 +4,9 @@
   <name>my_bot</name>
   <version>0.0.0</version>
   <description>TODO: Package description</description>
-  <maintainer email="my_email@email.com">MY NAME</maintainer>
+  <maintainer email="thuabui1632@gmail.com">robot2t</maintainer>
   <license>TODO: License declaration</license>
-
+t
   <buildtool_depend>ament_cmake</buildtool_depend>
 
   <test_depend>ament_lint_auto</test_depend>
