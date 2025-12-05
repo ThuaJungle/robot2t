@@ -1,11 +1,11 @@
 cmake_minimum_required(VERSION 3.5)
-project(my_bot)
+project(robot2t)
 
 # Default to C99
 if(NOT CMAKE_C_STANDARD)
   set(CMAKE_C_STANDARD 99)
 endif()
-
+t
 # Default to C++14
 if(NOT CMAKE_CXX_STANDARD)
   set(CMAKE_CXX_STANDARD 14)
