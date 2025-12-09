@@ -33,14 +33,14 @@ def generate_launch_description():
         PythonLaunchDescriptionSource([os.path.join(
             get_package_share_directory('ros_gz_sim'), 'launch', 'gz_sim.launch.py'
         )]),
-        launch_arguments={'gz_args': '-r -s -v4 empty.sdf'}.items()
+        launch_arguments={'gz_args': '-r empty.sdf'}.items()
     )
 
     # 3. Spawn (Thả) robot vào Gazebo
     spawn_entity = Node(
         package='ros_gz_sim',
         executable='create',
-        arguments=['-topic', 'robot_description', '-name', 'robot2t', '-world', 'empty', '-z', '0.1'],
+        arguments=['-topic', 'robot_description', '-name', 'robot2t', '-z', '0.1'],
         output='screen'
     )
 
