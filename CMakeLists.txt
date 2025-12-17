@@ -34,7 +34,11 @@ endif()
 # Hiện tại bạn mới có 'launch' và 'description'.
 # Sau này nếu tạo thêm folder 'config' hay 'worlds' thì thêm tên vào đây.
 install(
+<<<<<<< HEAD
   DIRECTORY config launch description meshes maps scripts/arduino_bridge.py worlds 
+=======
+  DIRECTORY config launch description meshes worlds 
+>>>>>>> 895e434610b068c9ee05b7b7b49194167d756d06
   DESTINATION share/${PROJECT_NAME}
 )
 

@@ -1,12 +1,16 @@
 <?xml version="1.0"?>
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
+<<<<<<< HEAD
   <name>robot2t</name>
+=======
+  <name>robot2t/name>
+>>>>>>> 895e434610b068c9ee05b7b7b49194167d756d06
   <version>0.0.0</version>
   <description>TODO: Package description</description>
   <maintainer email="thuabui1632@gmail.com">ThuaJungle</maintainer>
   <license>TODO: License declaration</license>
-
+t
   <buildtool_depend>ament_cmake</buildtool_depend>
 
   <test_depend>ament_lint_auto</test_depend>

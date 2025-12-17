@@ -1,7 +1,186 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro"  name="robot">
+<<<<<<< HEAD
     <xacro:include filename="robot_core.xacro"/>                                  
     <xacro:include filename="gazebo_control.xacro"/>
     <xacro:include filename="ydlidar.xacro"/> 
+=======
 
+    <xacro:property name="chassis_length" value="0.6"/>
+    <xacro:property name="chassis_width" value="0.4"/>
+    <xacro:property name="chassis_height" value="0.3"/>
+    
+    <xacro:property name="wheel_radius" value="0.08"/>
+    <xacro:property name="wheel_thickness" value="0.05"/>
+    
+    <xacro:property name="wheel_base" value="0.38"/>   
+    <xacro:property name="track_width" value="0.48"/>
+    
+    <xacro:property name="chassis_mass" value="20.0"/>
+    <xacro:property name="wheel_mass" value="1.0"/>
+
+    <material name="white"><color rgba="1 1 1 1"/></material>
+    <material name="orange"><color rgba="1 0.3 0.1 1"/></material>
+    <material name="blue"><color rgba="0.2 0.2 1 1"/></material>
+    <material name="black"><color rgba="0 0 0 1"/></material>
+
+    <link name="base_link"></link>
+>>>>>>> 895e434610b068c9ee05b7b7b49194167d756d06
+
+    <joint name="chassis_joint" type="fixed">
+        <parent link="base_link"/>
+        <child link="chassis"/>
+        <origin xyz="${-wheel_base/2} 0 0"/>
+    </joint>
+
+    <link name="chassis">
+        <visual>
+            <origin xyz="0.197 0 0.078" rpy="0 0 ${-pi/2}"/> 
+            <geometry>
+                <mesh filename="package://robot2t/meshes/chassis.stl" scale="0.001 0.001 0.001"/>
+            </geometry>
+            <material name="white"/>
+        </visual>
+
+        <collision>
+            <origin xyz="${chassis_length/2} 0 ${chassis_height/2}"/>
+            <geometry>
+                <box size="${chassis_length} ${chassis_width} ${chassis_height}"/>
+            </geometry>
+        </collision>
+
+        <inertial>
+            <origin xyz="${chassis_length/2} 0 ${chassis_height/2}" rpy="0 0 0"/>
+            <mass value="${chassis_mass}"/>
+            <inertia ixx="${(1/12) * chassis_mass * (chassis_width*chassis_width + chassis_height*chassis_height)}" ixy="0.0" ixz="0.0"
+                     iyy="${(1/12) * chassis_mass * (chassis_length*chassis_length + chassis_height*chassis_height)}" iyz="0.0"
+                     izz="${(1/12) * chassis_mass * (chassis_length*chassis_length + chassis_width*chassis_width)}" />
+        </inertial>
+    </link>
+
+    <xacro:macro name="rear_wheel" params="prefix y_offset">
+        <link name="${prefix}_wheel">
+            <visual>
+                <origin xyz="0 0 0" rpy="0 ${-pi/2} 0"/>
+                <geometry>
+                    <mesh filename="package://robot2t/meshes/wheels.stl" scale="0.001 0.001 0.001"/>
+                </geometry>
+                <material name="blue"/>
+            </visual>
+
+            <collision>
+                <geometry>
+                    <cylinder radius="${wheel_radius}" length="${wheel_thickness}"/>
+                </geometry>
+            </collision>
+
+            <inertial>
+                <origin xyz="0 0 0" rpy="0 0 0"/>
+                <mass value="${wheel_mass}"/>
+                <inertia ixx="${(1/12) * wheel_mass * (3*wheel_radius*wheel_radius + wheel_thickness*wheel_thickness)}" ixy="0" ixz="0"
+                         iyy="${(1/12) * wheel_mass * (3*wheel_radius*wheel_radius + wheel_thickness*wheel_thickness)}" iyz="0"
+                         izz="${(1/2) * wheel_mass * (wheel_radius*wheel_radius)}" />
+            </inertial>
+        </link>
+
+        <joint name="${prefix}_wheel_joint" type="continuous">
+            <parent link="chassis"/>
+            <child link="${prefix}_wheel"/>
+            <origin xyz="0 ${y_offset} 0" rpy="${-pi/2} 0 0"/>
+            <axis xyz="0 0 1"/>
+        </joint>
+    </xacro:macro>
+
+    <xacro:rear_wheel prefix="left_rear" y_offset="${track_width/2}"/>
+    <xacro:rear_wheel prefix="right_rear" y_offset="${-track_width/2}"/>
+
+    <xacro:macro name="front_steering_wheel" params="prefix y_offset">
+        
+        <link name="${prefix}_steering_link">
+            <visual>
+                <geometry><box size="0.05 0.05 0.05"/></geometry> 
+                <material name="black"/>
+            </visual>
+            <inertial>
+                <mass value="0.1"/>
+                <inertia ixx="0.001" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001"/>
+            </inertial>
+        </link>
+
+        <joint name="${prefix}_steering_joint" type="revolute">
+            <parent link="chassis"/>
+            <child link="${prefix}_steering_link"/>
+            <origin xyz="${wheel_base-0.008} ${y_offset} 0" rpy="0 0 0"/>
+            <axis xyz="0 0 1"/> 
+            <limit lower="-0.6" upper="0.6" effort="10" velocity="1.0"/>
+        </joint>
+
+        <link name="${prefix}_front_wheel">
+            <visual>
+                <origin xyz="0 0 0" rpy="0 ${-pi/2} 0"/>
+                <geometry>
+                     <mesh filename="package://robot2t/meshes/wheels.stl" scale="0.001 0.001 0.001"/>
+                </geometry>
+                <material name="blue"/>
+            </visual>
+
+            <collision>
+                <geometry>
+                    <cylinder radius="${wheel_radius}" length="${wheel_thickness}"/>
+                </geometry>
+            </collision>
+            
+             <inertial>
+                <mass value="${wheel_mass}"/>
+                <inertia ixx="${(1/12) * wheel_mass * (3*wheel_radius*wheel_radius + wheel_thickness*wheel_thickness)}" ixy="0" ixz="0"
+                         iyy="${(1/12) * wheel_mass * (3*wheel_radius*wheel_radius + wheel_thickness*wheel_thickness)}" iyz="0"
+                         izz="${(1/2) * wheel_mass * (wheel_radius*wheel_radius)}" />
+            </inertial>
+        </link>
+
+        <joint name="${prefix}_front_wheel_joint" type="continuous">
+            <parent link="${prefix}_steering_link"/>
+            <child link="${prefix}_front_wheel"/>
+            <origin xyz="0 0 0" rpy="${-pi/2} 0 0"/>
+            <axis xyz="0 0 1"/> 
+        </joint>
+
+    </xacro:macro>
+
+    <xacro:front_steering_wheel prefix="left_front" y_offset="${track_width/2}"/>
+    <xacro:front_steering_wheel prefix="right_front" y_offset="${-track_width/2}"/>
+
+    <gazebo>
+        <plugin filename="gz-sim-ackermann-steering-system" name="gz::sim::systems::AckermannSteering">
+                                     
+            <left_joint>left_rear_wheel_joint</left_joint>
+            <right_joint>right_rear_wheel_joint</right_joint>                                      
+                               
+            <left_steering_joint>left_front_steering_joint</left_steering_joint>
+            <right_steering_joint>right_front_steering_joint</right_steering_joint>
+
+            <kingpin_width>${track_width}</kingpin_width> 
+            <steering_limit>0.6</steering_limit> 
+            <wheel_base>${wheel_base}</wheel_base>    
+            <wheel_separation>${track_width}</wheel_separation> 
+            <wheel_radius>${wheel_radius}</wheel_radius> 
+            
+            <min_velocity>-5</min_velocity>
+            <max_velocity>5</max_velocity>
+            <min_acceleration>-5</min_acceleration>
+            <max_acceleration>5</max_acceleration>
+
+            <topic>cmd_vel</topic>
+            <odom_topic>odom</odom_topic>
+            <tf_topic>tf</tf_topic>
+            <frame_id>odom</frame_id>
+            <child_frame_id>base_link</child_frame_id>
+            <odom_publish_frequency>30</odom_publish_frequency>
+        </plugin>                                                                                                                          
+
+        <plugin filename="gz-sim-joint-state-publisher-system" name="gz::sim::systems::JointStatePublisher">
+            <topic>joint_states</topic>
+        </plugin>
+    </gazebo>
+                                                      
 </robot>
