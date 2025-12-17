@@ -1,7 +1,126 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro"  name="robot">
 
-    <!-- Example link -->
+    <xacro:property name="chassis_length" value="0.6"/> <xacro:property name="chassis_width" value="0.4"/>  <xacro:property name="chassis_height" value="0.3"/> <xacro:property name="wheel_radius" value="0.08"/>   <xacro:property name="wheel_thickness" value="0.05"/> <xacro:property name="wheel_base" value="0.4"/>     <xacro:property name="track_width" value="0.35"/>   <xacro:property name="chassis_mass" value="20.0"/>
+    <xacro:property name="wheel_mass" value="1.0"/>
+
+    <material name="white"><color rgba="1 1 1 1"/></material>
+    <material name="orange"><color rgba="1 0.3 0.1 1"/></material>
+    <material name="blue"><color rgba="0.2 0.2 1 1"/></material>
+    <material name="black"><color rgba="0 0 0 1"/></material>
+
     <link name="base_link"></link>
+
+    <joint name="chassis_joint" type="fixed">
+        <parent link="base_link"/>
+        <child link="chassis"/>
+        <origin xyz="${-wheel_base/2} 0 0"/>
+    </joint>
+
+    <link name="chassis">
+        <visual>
+            <origin xyz="${chassis_length/2} 0 ${chassis_height/2}"/>
+            <geometry>
+                <box size="${chassis_length} ${chassis_width} ${chassis_height}"/>
+            </geometry>
+            <material name="white"/>
+        </visual>
+        <collision>
+            <origin xyz="${chassis_length/2} 0 ${chassis_height/2}"/>
+            <geometry>
+                <box size="${chassis_length} ${chassis_width} ${chassis_height}"/>
+            </geometry>
+        </collision>
+        <inertial>
+            <origin xyz="${chassis_length/2} 0 ${chassis_height/2}" rpy="0 0 0"/>
+            <mass value="${chassis_mass}"/>
+            <inertia ixx="${(1/12) * chassis_mass * (chassis_width*chassis_width + chassis_height*chassis_height)}" ixy="0.0" ixz="0.0"
+                     iyy="${(1/12) * chassis_mass * (chassis_length*chassis_length + chassis_height*chassis_height)}" iyz="0.0"
+                     izz="${(1/12) * chassis_mass * (chassis_length*chassis_length + chassis_width*chassis_width)}" />
+        </inertial>
+    </link>
+
+    <xacro:macro name="rear_wheel" params="prefix y_offset">
+        <link name="${prefix}_wheel">
+            <visual>
+                <geometry>
+                    <cylinder radius="${wheel_radius}" length="${wheel_thickness}"/>
+                </geometry>
+                <material name="blue"/>
+            </visual>
+            <collision>
+                <geometry>
+                    <cylinder radius="${wheel_radius}" length="${wheel_thickness}"/>
+                </geometry>
+            </collision>
+            <inertial>
+                <origin xyz="0 0 0" rpy="0 0 0"/>
+                <mass value="${wheel_mass}"/>
+                <inertia ixx="${(1/12) * wheel_mass * (3*wheel_radius*wheel_radius + wheel_thickness*wheel_thickness)}" ixy="0" ixz="0"
+                         iyy="${(1/12) * wheel_mass * (3*wheel_radius*wheel_radius + wheel_thickness*wheel_thickness)}" iyz="0"
+                         izz="${(1/2) * wheel_mass * (wheel_radius*wheel_radius)}" />
+            </inertial>
+        </link>
+
+        <joint name="${prefix}_wheel_joint" type="continuous">
+            <parent link="chassis"/>
+            <child link="${prefix}_wheel"/>
+            <origin xyz="0 ${y_offset} 0" rpy="${-pi/2} 0 0"/>
+            <axis xyz="0 0 1"/>
+        </joint>
+    </xacro:macro>
+
+    <xacro:rear_wheel prefix="left_rear" y_offset="${track_width/2}"/>
+    <xacro:rear_wheel prefix="right_rear" y_offset="${-track_width/2}"/>
+
+    <xacro:macro name="front_steering_wheel" params="prefix y_offset">
+        
+        <link name="${prefix}_steering_link">
+            <visual>
+                <geometry><box size="0.05 0.05 0.05"/></geometry> <material name="black"/>
+            </visual>
+            <inertial>
+                <mass value="0.1"/>
+                <inertia ixx="0.001" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001"/>
+            </inertial>
+        </link>
+
+        <joint name="${prefix}_steering_joint" type="revolute">
+            <parent link="chassis"/>
+            <child link="${prefix}_steering_link"/>
+            <origin xyz="${wheel_base} ${y_offset} 0" rpy="0 0 0"/>
+            <axis xyz="0 0 1"/> <limit lower="-0.6" upper="0.6" effort="10" velocity="1.0"/>
+        </joint>
+
+        <link name="${prefix}_front_wheel">
+            <visual>
+                <geometry>
+                    <cylinder radius="${wheel_radius}" length="${wheel_thickness}"/>
+                </geometry>
+                <material name="blue"/>
+            </visual>
+            <collision>
+                <geometry>
+                    <cylinder radius="${wheel_radius}" length="${wheel_thickness}"/>
+                </geometry>
+            </collision>
+             <inertial>
+                <mass value="${wheel_mass}"/>
+                <inertia ixx="${(1/12) * wheel_mass * (3*wheel_radius*wheel_radius + wheel_thickness*wheel_thickness)}" ixy="0" ixz="0"
+                         iyy="${(1/12) * wheel_mass * (3*wheel_radius*wheel_radius + wheel_thickness*wheel_thickness)}" iyz="0"
+                         izz="${(1/2) * wheel_mass * (wheel_radius*wheel_radius)}" />
+            </inertial>
+        </link>
+
+        <joint name="${prefix}_front_wheel_joint" type="continuous">
+            <parent link="${prefix}_steering_link"/>
+            <child link="${prefix}_front_wheel"/>
+            <origin xyz="0 0 0" rpy="${-pi/2} 0 0"/>
+            <axis xyz="0 0 1"/> </joint>
+
+    </xacro:macro>
+
+    <xacro:front_steering_wheel prefix="left_front" y_offset="${track_width/2}"/>
+    <xacro:front_steering_wheel prefix="right_front" y_offset="${-track_width/2}"/>
 
 </robot>
